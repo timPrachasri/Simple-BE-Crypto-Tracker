@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Token {
+  id             Int              @id @default(autoincrement())
+  name           String
+  symbol         String
+  decimals       Int
+  createdAt      DateTime         @default(now())
+  WalletHistory  WalletHistory[]
+  CurrentBalance CurrentBalance[]
+}
+
+model WalletHistory {
+  id        Int       @id @default(autoincrement())
+  datetime  DateTime  @db.Timestamptz(3)
+  amount    BigInt
+  tokenId   Int       @map("token_id")
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(3)
+
+  Token Token @relation(fields: [tokenId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("wallet_histories")
+}
+
+model CurrentBalance {
+  id        Int       @id @default(autoincrement())
+  amount    BigInt
+  tokenId   Int       @map("token_id")
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.Timestamp(3)
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamp(3)
+
+  Token Token @relation(fields: [tokenId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([tokenId], type: Hash)
+  @@map("current_balances")
+}
