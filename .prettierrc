@@ -1,0 +1,14 @@
+{
+  "semi": false,
+  "trailingComma": "all",
+  "singleQuote": true,
+  "printWidth": 80,
+  "tabWidth": 2,
+  "importOrder": [
+    "^(\\w)(.*)$",
+    "^(\\~)(.*)$",
+    "^(\\.{1,2}\\/)(.*)$"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
+}
