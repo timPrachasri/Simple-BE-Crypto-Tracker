@@ -83,7 +83,7 @@ export class GetWalletHistoriesUsecase
         return {
           datetime: datetime,
           amount: histories.reduce<Amount>((accum, history) => {
-            return history.amount.add(accum)
+            return history.increaseAmount(accum).amount
           }, Amount.zero()).nonZeroDecimalAmount,
         } as IGetWalletHistoriesOutput
       },

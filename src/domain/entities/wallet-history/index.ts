@@ -58,6 +58,11 @@ export class WalletHistoryEntity extends Entity<IWalletHistoryProps> {
   ): WalletHistoryEntity {
     return new WalletHistoryEntity(props, id)
   }
+
+  increaseAmount(amount: Amount): WalletHistoryEntity {
+    this._amount = this._amount.add(amount)
+    return this
+  }
 }
 
 export class WalletHistoryEntities extends Entity<Array<WalletHistoryEntity>> {
