@@ -16,14 +16,57 @@
   ```bash
     make docker/up
   ```  
+  - Wait for `database system is ready to accept connections` and `[App]: Listening on port 300` signal
   - Run yarn `db:migrate:cd_deploy` to migrate any unmigrated migration files. More information can be found [Here](https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-deploy)
   ```bash
     yarn db:migrate:cd_deploy
   ``` 
+  - Result from `yarn db:migrate:cd_deploy`
+  ```bash
+    yarn db:migrate:cd_deploy 
+    yarn run v1.22.17
+    warning ../../package.json: No license field
+    $ npx prisma migrate deploy
+    Environment variables loaded from .env
+    Prisma schema loaded from prisma/schema.prisma
+    Datasource "db": PostgreSQL database "crypto_be_db", schema "public" at "localhost:5432"
+
+    3 migrations found in prisma/migrations
+
+    Applying migration `20230122165956_init_schemas`
+    Applying migration `20230122171131_alter_tables_name`
+    Applying migration `20230123041223_alter_tables_structure`
+
+    The following migrations have been applied:
+
+    migrations/
+      └─ 20230122165956_init_schemas/
+        └─ migration.sql
+      └─ 20230122171131_alter_tables_name/
+        └─ migration.sql
+      └─ 20230123041223_alter_tables_structure/
+        └─ migration.sql
+          
+    All migrations have been successfully applied.
+  ```
   - Seed a BTC token
   ```bash
     yarn db:seed
   ``` 
+  - Result from `yarn db:seed`
+  ```bash
+    yarn db:seed
+    yarn run v1.22.17
+    warning ../../package.json: No license field
+    $ npx prisma db seed 
+    Environment variables loaded from .env
+    Running seed command `node -r tsconfig-paths/register -r ts-node/register prisma/seed_bitcoin_20230123230500.ts` ...
+    >> Seeding token: Bitcoin (BTC)
+    >> DONE seeding token: Bitcoin (BTC)
+
+    🌱  The seed command has been executed.
+    ✨  Done in 5.37s.
+  ```
 ### Starting API (non-docker)
   - Run make `docker/db/up` using the makefile to instantiate a Postgres environment:
   ```bash
@@ -77,3 +120,5 @@ curl --location --request GET 'http://localhost:3002/api/v1/wallet-histories' \
 curl --location --request GET 'http://localhost:3002/api/v1/current-balance'
 ```
 > Also, make sure that you replace the http://localhost:3002 with the right url of the API endpoint.
+
+**Enjoy!**
