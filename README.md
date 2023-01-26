@@ -88,11 +88,10 @@
 - Use the following environment variables:
 ```bash
 # use this DATABASE_URL for running PostgreSQL on Docker compose
-#DATABASE_URL="postgresql://postgres:mypass@postgres:5432/crypto_be_db?schema=public"
+DATABASE_URL="postgresql://postgres:mypass@postgres:5432/crypto_be_db?schema=public"
 
 # for local development use this url in the .env file
-NODE_ENV=develop
-DATABASE_URL="postgresql://postgres:mypass@localhost:5432/crypto_be_db?schema=public"
+# DATABASE_URL="postgresql://postgres:mypass@localhost:5432/crypto_be_db?schema=public"
 ```
 
 ### Endpoints
