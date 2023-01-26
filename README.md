@@ -44,16 +44,12 @@
 ### Environment Variables
 - Use the following environment variables:
 ```bash
-NODE_ENV="develop" // develop | prod
-POSTGRES_CONNECTOR=postgresql
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=mypass
-POSTGRES_DB=crypto_be_db
-POSTGRES_LOG=1
+# use this DATABASE_URL for running PostgreSQL on Docker compose
+#DATABASE_URL="postgresql://postgres:mypass@postgres:5432/crypto_be_db?schema=public"
 
-DATABASE_URL=${POSTGRES_CONNECTOR}://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public
+# for local development use this url in the .env file
+NODE_ENV=develop
+DATABASE_URL="postgresql://postgres:mypass@localhost:5432/crypto_be_db?schema=public"
 ```
 
 ### Endpoints

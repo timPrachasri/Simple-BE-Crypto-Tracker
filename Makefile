@@ -8,4 +8,4 @@ docker/down:
 	docker-compose -f docker/docker-compose.yml down
 
 docker/db/up:
-	docker-compose -f docker/docker-compose.yml up -d db
+	docker-compose -f docker/docker-compose.yml up -d postgres
