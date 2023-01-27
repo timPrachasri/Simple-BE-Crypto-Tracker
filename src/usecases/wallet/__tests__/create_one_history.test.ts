@@ -19,7 +19,7 @@ import {
   ITransactionAdaptor,
   IWalletHistoryRepository,
 } from '~/infra/repos/interfaces'
-import { InternalServerError, Result } from '~/shared/core'
+import { BadRequest, InternalServerError, Result } from '~/shared/core'
 import { UniqueEntityID } from '~/shared/domain'
 import { formatJSDateToISO } from '~/utils'
 
@@ -103,10 +103,11 @@ describe('CreateOneWalletHistoryUsecase', () => {
   describe('execute', () => {
     describe('When input validation fails', () => {
       test.each([
-        { date: 'invalid date' },
-        { date: '2022-13-14T14:48:01+04:00' },
-      ])('should return an error using date %s', async ({ date }) => {
-        input = { datetime: date, amount: 10 }
+        { date: 'invalid date', amount: 0 },
+        { date: '2022-13-14T14:48:01+04:00', amount: 0 },
+        { date: '2022-12-14T14:48:01+04:00', amount: -1 },
+      ])('should return an error using date %s', async ({ date, amount }) => {
+        input = { datetime: date, amount }
         const result = await usecase.execute(input)
         expect(isLeft(result)).toBeTruthy()
       })
@@ -159,64 +160,23 @@ describe('CreateOneWalletHistoryUsecase', () => {
       })
     })
 
-    describe('When createdAt is returned', () => {
-      it('should create a new wallet history', async () => {
+    describe("When amount decimal places is't valid", () => {
+      it('should return an error', async () => {
         input = {
-          amount: 10,
+          amount: 10.999999999,
           datetime: '2022-10-14T14:48:01+04:00',
         }
-        const expectedDatetime = DateTime.fromISO(input.datetime, {
-          zone: 'utc',
-        }).toJSDate()
-        repositories.walletHistoryRepository.createOne = jest.fn(() =>
-          Promise.resolve(
-            new WalletHistoryEntity(
-              {
-                amount: Amount.fromNonZeroDecimalAmount(
-                  input.amount,
-                  BTC.decimals,
-                ).amount,
-                datetime: expectedDatetime,
-                token: BTC,
-                createdAt: expectedDatetime,
-              },
-              new UniqueEntityID(1),
-            ),
-          ),
-        )
-        repositories.currentBalanceRepository.createOne = jest.fn(() =>
-          Promise.resolve(
-            new CurrentBalanceEntity({
-              amount: Amount.fromNonZeroDecimalAmount(
-                input.amount * 10,
-                BTC.decimals,
-              ).amount,
-              token: BTC,
-            }),
-          ),
-        )
 
         const result = await usecase.execute(input)
-        expect(
-          repositories.walletHistoryRepository.createOne,
-        ).toHaveBeenCalledWith(
-          new WalletHistoryEntity({
-            amount: Amount.fromNonZeroDecimalAmount(input.amount, BTC.decimals)
-              .amount,
-            datetime: DateTime.fromISO(input.datetime, {
-              zone: 'utc',
-            }).toJSDate(),
-            token: BTC,
-          }),
-        )
-        expect(isRight(result)).toBeTruthy()
+        expect(isLeft(result)).toBeTruthy()
         expect(result).toEqual(
-          right(
-            Result.ok<ICreateWalletHistoryOutputDTO>({
-              createdAt: formatJSDateToISO(expectedDatetime),
-              inputAmount: input.amount,
-              accumAmount: input.amount * 10,
-            }),
+          left(
+            Result.fail<BadRequest>(
+              new BadRequest(
+                'Bad Request',
+                new Error('CreateOneItemUsecase::Invalid Amount Decimals'),
+              ),
+            ),
           ),
         )
       })
@@ -258,6 +218,69 @@ describe('CreateOneWalletHistoryUsecase', () => {
                 new Error('CreateOneItemUsecase::Token not found'),
               ),
             ),
+          ),
+        )
+      })
+    })
+
+    describe('When createdAt is returned', () => {
+      it('should create a new wallet history', async () => {
+        input = {
+          amount: 10.999999,
+          datetime: '2022-10-14T14:48:01+04:00',
+        }
+        const expectedDatetime = DateTime.fromISO(input.datetime, {
+          zone: 'utc',
+        }).toJSDate()
+        repositories.walletHistoryRepository.createOne = jest.fn(() =>
+          Promise.resolve(
+            new WalletHistoryEntity(
+              {
+                amount: Amount.fromNonZeroDecimalAmount(
+                  input.amount,
+                  BTC.decimals,
+                ).amount,
+                datetime: expectedDatetime,
+                token: BTC,
+                createdAt: expectedDatetime,
+              },
+              new UniqueEntityID(1),
+            ),
+          ),
+        )
+        repositories.currentBalanceRepository.createOne = jest.fn(() =>
+          Promise.resolve(
+            new CurrentBalanceEntity({
+              amount: Amount.fromNonZeroDecimalAmount(
+                input.amount,
+                BTC.decimals,
+              ).amount,
+              token: BTC,
+            }),
+          ),
+        )
+
+        const result = await usecase.execute(input)
+        expect(
+          repositories.walletHistoryRepository.createOne,
+        ).toHaveBeenCalledWith(
+          new WalletHistoryEntity({
+            amount: Amount.fromNonZeroDecimalAmount(input.amount, BTC.decimals)
+              .amount,
+            datetime: DateTime.fromISO(input.datetime, {
+              zone: 'utc',
+            }).toJSDate(),
+            token: BTC,
+          }),
+        )
+        expect(isRight(result)).toBeTruthy()
+        expect(result).toEqual(
+          right(
+            Result.ok<ICreateWalletHistoryOutputDTO>({
+              createdAt: formatJSDateToISO(expectedDatetime),
+              inputAmount: input.amount,
+              accumAmount: input.amount,
+            }),
           ),
         )
       })
