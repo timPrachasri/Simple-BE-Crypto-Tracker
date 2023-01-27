@@ -2,7 +2,7 @@ import { parseUnits } from '@ethersproject/units'
 
 import { Either, isLeft, left, right } from 'fp-ts/lib/Either'
 import { isNone, isSome } from 'fp-ts/lib/Option'
-import Joi from 'joi'
+import Joi, { Err } from 'joi'
 import { DateTime } from 'luxon'
 
 import { TokenSymbol } from '~/constants'
@@ -59,7 +59,7 @@ export class CreateOneWalletHistoryUsecase
   ): Either<Error, ICreateWalletHistoryInputDTO> {
     const schema = Joi.object({
       datetime: Joi.date().iso().required(),
-      amount: Joi.number().required(),
+      amount: Joi.number().min(0).required(),
     })
     const result = schema.validate(input)
     if (result.error) {
@@ -160,6 +160,16 @@ export class CreateOneWalletHistoryUsecase
 
       return res
     } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message === 'CreateOneItemUsecase::Invalid Amount Decimals'
+      ) {
+        return left(
+          Result.fail<BadRequest>(
+            new BadRequest('Bad Request', error as Error),
+          ),
+        )
+      }
       return left(
         Result.fail<InternalServerError>(
           new InternalServerError('Internal Server Error', error as Error),
