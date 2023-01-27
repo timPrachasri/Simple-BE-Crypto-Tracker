@@ -73,7 +73,7 @@
     "winston": "^3.5.1"
   },
   "engines": {
-    "node": "^16.13.2"
+    "node": "^18.13.0"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "3.2.0",

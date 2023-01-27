@@ -5,18 +5,20 @@
 
 ### Prerequisites
 - docker
+- makefile
 - Install module's dependencies (for seed and Prisma deploy)
   - Since this is for development purpose, some scripts need to be called separately after starting the Docker environment:
   ```bash
   yarn install
   ```
 
-### Starting API (using docker - recommended)
+### Starting API (using docker)
   - Run make `docker/up` using the makefile to instantiate a Docker environment:
   ```bash
     make docker/up
   ```  
   - Wait for `database system is ready to accept connections` and `[App]: Listening on port 300` signal
+  - Change .env `DATABASE_URL` to local, since we are executing the rest scripts using a local call (if you can execute using docker exec cli, you can skip this part)
   - Run yarn `db:migrate:cd_deploy` to migrate any unmigrated migration files. More information can be found [Here](https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-deploy)
   ```bash
     yarn db:migrate:cd_deploy
@@ -72,6 +74,7 @@
   ```bash
     make docker/db/up
   ```  
+  - Wait for `database system is ready to accept connections` signal
   - Change .env `DATABASE_URL` to local, since we are executing the rest scripts using a local call (if you can execute using docker exec cli, you can skip this part)
   - Run yarn `db:migrate:cd_deploy` to migrate any unmigrated migration files. More information can be found [Here](https://www.prisma.io/docs/reference/api-reference/command-reference#migrate-deploy)
   ```bash
@@ -85,6 +88,7 @@
   ```bash
     yarn dev
   ``` 
+
 ### Environment Variables
 - Use the following environment variables:
 ```bash
