@@ -1,7 +1,7 @@
 {
-  "name": "crypto-be-anymind",
+  "name": "crypto-be",
   "version": "1.0.0",
-  "description": "API for crypto-be-anymind",
+  "description": "API for crypto-be",
   "author": "Tim Prachasri",
   "license": "MIT",
   "main": "index.js",
