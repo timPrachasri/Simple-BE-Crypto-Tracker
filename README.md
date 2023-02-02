@@ -1,6 +1,6 @@
 
 
-## Getting Started (Anymind Crypto Backend)
+## Getting Started (Crypto Backend)
 ---
 
 ### Prerequisites
